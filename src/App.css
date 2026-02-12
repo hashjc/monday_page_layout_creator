@@ -62,8 +62,6 @@ body {
 .metadata-section {
   background-color: var(--primary-background-color);
   border-radius: 8px;
-  /* REMOVED: opacity: 0.7 - this was making everything transparent */
-  /* REMOVED: padding: 0 - this was overriding the padding */
 }
 
 .columns-container {
