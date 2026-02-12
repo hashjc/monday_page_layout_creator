@@ -99,7 +99,7 @@ const App = () => {
     // FORM CONFIG FUNCTIONS
     // ============================================
     // Generate default form config from board columns (all fields in one section, sorted alphabetically)
-    const generateDefaultFormConfig = useCallback((boardColumns) => {
+    const generateDefaultFormConfig = useCallback((boardColumns, boardName = "Board") => {
         const sortedFields = [...boardColumns]
             .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()))
             .map((col) => ({
@@ -114,7 +114,7 @@ const App = () => {
             sections: [
                 {
                     id: "default",
-                    title: "Form Fields",
+                    title: `${boardName} Information`,
                     fields: sortedFields,
                 },
             ],
@@ -270,6 +270,7 @@ const App = () => {
                     const query = `
                     query {
                       boards(ids: [${res.data.boardId}]) {
+                        name
                         columns {
                           id
                           title
@@ -281,7 +282,9 @@ const App = () => {
 
                     const result = await monday.api(query);
                     if (result.data && result.data.boards && result.data.boards.length > 0) {
-                        const unsortedColumns = result.data.boards[0].columns || [];
+                        const boardData = result.data.boards[0];
+                        const unsortedColumns = boardData.columns || [];
+                        const boardName = boardData.name || "Board";
 
                         // Sort columns alphabetically by title, then by id if titles are the same
                         const sortedColumns = [...unsortedColumns].sort((a, b) => {
@@ -295,7 +298,7 @@ const App = () => {
 
                         // Load form config (either saved or default)
                         // Note: We need to use the sortedColumns here directly since state updates are async
-                        const defaultConfig = generateDefaultFormConfig(sortedColumns);
+                        const defaultConfig = generateDefaultFormConfig(sortedColumns, boardName);
                         setFormConfig(defaultConfig);
 
                         // Now fetch child boards (boards that reference this board via connected board columns)
@@ -415,6 +418,17 @@ const App = () => {
                             Child Boards
                         </Text>
                     </div>
+
+                    {/* Sections Navigation Item */}
+                    <div
+                        className={`nav-item ${selectedSection === "sections" ? "active" : ""}`}
+                        onClick={() => setSelectedSection("sections")}
+                        style={{ cursor: "pointer" }}
+                    >
+                        <Text type="paragraph" weight="bold">
+                            Sections
+                        </Text>
+                    </div>
                 </Box>
 
                 {/* RIGHT CONTENT AREA - Metadata Section */}
@@ -484,29 +498,11 @@ const App = () => {
                                 </Box>
                             ) : (
                                 <Text type="paragraph" color="var(--secondary-text-color)">
-                                    No columns match your search.
+                                    No columns found or board not yet loaded.
                                 </Text>
                             )}
                         </Box>
-
-                        {/* New Section Button */}
-                        <Box marginTop="medium">
-                            <Button
-                                kind="secondary"
-                                onClick={() => {
-                                    // TODO: Add new section to form
-                                    console.log("New Section clicked");
-                                }}
-                            >
-                                + New Section
-                            </Button>
-                        </Box>
-                    ) : (
-                        <Text type="paragraph" color="var(--secondary-text-color)">
-                            No columns found or board not yet loaded.
-                        </Text>
                     )}
-                </Box>
 
                     {/* CHILD BOARDS VIEW */}
                     {selectedSection === "childBoards" && (
@@ -579,6 +575,67 @@ const App = () => {
                             )}
                         </Box>
                     )}
+
+                    {/* SECTIONS VIEW */}
+                    {selectedSection === "sections" && (
+                        <Box>
+                            <Heading type="h2" weight="bold" marginBottom="medium">
+                                Sections
+                            </Heading>
+
+                            {formConfig && formConfig.sections && formConfig.sections.length > 0 ? (
+                                <Box>
+                                    <Box marginBottom="large">
+                                        <Text type="paragraph" color="var(--secondary-text-color)" marginBottom="medium">
+                                            Current sections: {formConfig.sections.length}
+                                        </Text>
+                                        {formConfig.sections.map((section) => (
+                                            <Box
+                                                key={section.id}
+                                                padding="small"
+                                                marginBottom="small"
+                                                backgroundColor="var(--secondary-background-color)"
+                                                border="1px solid var(--ui-border-color)"
+                                                borderRadius="6px"
+                                            >
+                                                <Text type="paragraph" weight="bold">
+                                                    {section.title}
+                                                </Text>
+                                                <Text type="paragraph" color="var(--secondary-text-color)" size="small">
+                                                    {section.fields ? section.fields.length : 0} fields
+                                                </Text>
+                                            </Box>
+                                        ))}
+                                    </Box>
+
+                                    <Button
+                                        kind="secondary"
+                                        onClick={() => {
+                                            // TODO: Add new section functionality
+                                            console.log("New Section clicked");
+                                        }}
+                                    >
+                                        + New Section
+                                    </Button>
+                                </Box>
+                            ) : (
+                                <Box>
+                                    <Text type="paragraph" color="var(--secondary-text-color)" marginBottom="medium">
+                                        No sections created yet.
+                                    </Text>
+                                    <Button
+                                        kind="secondary"
+                                        onClick={() => {
+                                            // TODO: Add new section functionality
+                                            console.log("New Section clicked");
+                                        }}
+                                    >
+                                        + New Section
+                                    </Button>
+                                </Box>
+                            )}
+                        </Box>
+                    )}
                 </Box>
             </Flex>
 
@@ -621,6 +678,25 @@ const App = () => {
                                     </Box>
                                 </Box>
                             ))}
+
+                            {/* New Section Drop Zone */}
+                            <Box
+                                marginTop="large"
+                                padding="medium"
+                                backgroundColor="rgba(0, 115, 234, 0.05)"
+                                border="2px dashed var(--ui-border-color)"
+                                borderRadius="8px"
+                                style={{ textAlign: "center", minHeight: "120px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                            >
+                                <Flex direction="column" align="center" gap="small">
+                                    <Heading type="h4" weight="bold">
+                                        New Section
+                                    </Heading>
+                                    <Text type="paragraph" color="var(--secondary-text-color)">
+                                        Drag columns here to create a new section
+                                    </Text>
+                                </Flex>
+                            </Box>
 
                             {/* Submit button */}
                             <Flex gap="medium" marginTop="large">
