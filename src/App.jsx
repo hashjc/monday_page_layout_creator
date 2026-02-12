@@ -484,11 +484,29 @@ const App = () => {
                                 </Box>
                             ) : (
                                 <Text type="paragraph" color="var(--secondary-text-color)">
-                                    No columns found or board not yet loaded.
+                                    No columns match your search.
                                 </Text>
                             )}
                         </Box>
+
+                        {/* New Section Button */}
+                        <Box marginTop="medium">
+                            <Button
+                                kind="secondary"
+                                onClick={() => {
+                                    // TODO: Add new section to form
+                                    console.log("New Section clicked");
+                                }}
+                            >
+                                + New Section
+                            </Button>
+                        </Box>
+                    ) : (
+                        <Text type="paragraph" color="var(--secondary-text-color)">
+                            No columns found or board not yet loaded.
+                        </Text>
                     )}
+                </Box>
 
                     {/* CHILD BOARDS VIEW */}
                     {selectedSection === "childBoards" && (
