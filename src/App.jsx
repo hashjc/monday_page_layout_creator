@@ -158,7 +158,7 @@ const App = () => {
               )}
           </Box>
 
-          <Box marginBottom="large">
+          <Box marginBottom="large" className="metadata-section">
               <Heading type="h2" weight="bold" marginBottom="medium">
                   Board Columns
               </Heading>
@@ -206,7 +206,7 @@ const App = () => {
               )}
           </Box>
 
-          <Box marginBottom="large">
+          <Box marginBottom="large" className="metadata-section">
               <Heading type="h2" weight="bold" marginBottom="medium">
                   Child Boards
               </Heading>
