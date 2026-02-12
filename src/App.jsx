@@ -105,7 +105,7 @@ const App = () => {
                       </Text>
                   </Flex>
               ) : columns && columns.length > 0 ? (
-                  <Box>
+                  <Box className="columns-container">
                       {columns.map((column) => (
                           <div
                               key={column.id}
@@ -115,7 +115,6 @@ const App = () => {
                           >
                               <Box
                                   padding="small"
-                                  marginBottom="small"
                                   backgroundColor="var(--secondary-background-color)"
                                   border="1px solid var(--ui-border-color)"
                                   borderRadius="var(--border-radius-small)"

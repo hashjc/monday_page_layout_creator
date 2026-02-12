@@ -11,6 +11,12 @@ body {
   overflow-y: auto;
 }
 
+.columns-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
 .column-card {
   cursor: pointer;
   transition: all 0.2s ease;
@@ -18,6 +24,5 @@ body {
 
 .column-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background-color: var(--primary-background-color);
 }
 
