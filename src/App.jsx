@@ -107,28 +107,31 @@ const App = () => {
               ) : columns && columns.length > 0 ? (
                   <Box>
                       {columns.map((column) => (
-                          <Box
+                          <div
                               key={column.id}
-                              padding="small"
-                              marginBottom="small"
-                              backgroundColor="var(--secondary-background-color)"
-                              border="1px solid var(--ui-border-color)"
-                              borderRadius="var(--border-radius-small)"
                               onMouseEnter={() => setHoveredColumnId(column.id)}
                               onMouseLeave={() => setHoveredColumnId(null)}
                               className="column-card"
                           >
-                              <Flex align="center" justify="space-between">
-                                  <Text type="paragraph" color="var(--primary-text-color)">
-                                      <strong>{column.title}</strong> <em>({column.type})</em>
-                                  </Text>
-                                  {hoveredColumnId === column.id && (
-                                      <Text type="paragraph" color="var(--secondary-text-color)">
-                                          <strong>ID: {column.id}</strong>
+                              <Box
+                                  padding="small"
+                                  marginBottom="small"
+                                  backgroundColor="var(--secondary-background-color)"
+                                  border="1px solid var(--ui-border-color)"
+                                  borderRadius="var(--border-radius-small)"
+                              >
+                                  <Flex align="center" justify="space-between">
+                                      <Text type="paragraph" color="var(--primary-text-color)">
+                                          <strong>{column.title}</strong> <em>({column.type})</em>
                                       </Text>
-                                  )}
-                              </Flex>
-                          </Box>
+                                      {hoveredColumnId === column.id && (
+                                          <Text type="paragraph" color="var(--secondary-text-color)">
+                                              ID: {column.id}
+                                          </Text>
+                                      )}
+                                  </Flex>
+                              </Box>
+                          </div>
                       ))}
                   </Box>
               ) : (
