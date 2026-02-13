@@ -167,7 +167,7 @@ const App = () => {
             const storageKey = `layout_sections_${instanceId}`;
             await monday.storage.instance.setItem(storageKey, JSON.stringify(layoutSections));
 
-            setSavedLayoutSections([...layoutSections]);
+            setSavedLayoutSections(JSON.parse(JSON.stringify(layoutSections)));
             setHasUnsavedChanges(false);
 
             monday.execute("notice", {
@@ -260,7 +260,9 @@ const App = () => {
     // DRAG AND DROP HANDLERS
     // ============================================
     const handleColumnDragStart = (e, column) => {
+        console.log("Drag started:", column.title);
         e.dataTransfer.effectAllowed = "copy";
+        e.dataTransfer.setData("text/plain", column.id); // Required for Firefox
         setDraggedColumn(column);
     };
 
@@ -271,17 +273,27 @@ const App = () => {
         setDragOverSectionId(sectionId);
     };
 
-    const handleSectionDragLeave = (e) => {
-        e.preventDefault();
-        setDragOverSectionId(null);
+    const handleSectionDragLeave = (e, sectionId) => {
+        // Only clear if we're actually leaving this section's drop zone
+        const rect = e.currentTarget.getBoundingClientRect();
+        const isInside = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+
+        if (!isInside) {
+            setDragOverSectionId(null);
+        }
     };
 
     const handleSectionDrop = (e, sectionId) => {
         e.preventDefault();
         e.stopPropagation();
+        console.log("Drop on section:", sectionId, "Column:", draggedColumn);
+
         setDragOverSectionId(null);
 
-        if (!draggedColumn) return;
+        if (!draggedColumn) {
+            console.log("No dragged column");
+            return;
+        }
 
         // Check if column already exists in ANY section
         const exists = layoutSections.some((section) => section.fields.some((field) => field.columnId === draggedColumn.id));
@@ -304,6 +316,8 @@ const App = () => {
             type: draggedColumn.type,
             isDefault: false,
         };
+
+        console.log("Adding field:", newField, "to section:", sectionId);
 
         setLayoutSections(
             layoutSections.map((section) => {
@@ -722,11 +736,11 @@ const App = () => {
                                     )}
                                 </Flex>
 
-                                {/* DROP ZONE - Field Labels Grid (like Salesforce) */}
-                                <Box
+                                {/* DROP ZONE - Field Labels Grid */}
+                                <div
                                     className={`field-labels-grid section-drop-zone ${dragOverSectionId === section.id ? "drag-over" : ""}`}
                                     onDragOver={(e) => handleSectionDragOver(e, section.id)}
-                                    onDragLeave={handleSectionDragLeave}
+                                    onDragLeave={(e) => handleSectionDragLeave(e, section.id)}
                                     onDrop={(e) => handleSectionDrop(e, section.id)}
                                 >
                                     {section.fields.length > 0 ? (
@@ -745,6 +759,7 @@ const App = () => {
                                                         borderRadius: "4px",
                                                         backgroundColor: "white",
                                                         border: "1px solid var(--ui-border-color)",
+                                                        minHeight: "44px",
                                                     }}
                                                 >
                                                     <Text type="paragraph" color="var(--primary-text-color)">
@@ -778,12 +793,16 @@ const App = () => {
                                                 borderRadius: "8px",
                                                 textAlign: "center",
                                                 backgroundColor: "rgba(0, 115, 234, 0.03)",
+                                                minHeight: "100px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
                                             }}
                                         >
                                             <Text color="var(--secondary-text-color)">Drag columns here to add them to this section</Text>
                                         </Box>
                                     )}
-                                </Box>
+                                </div>
                             </Box>
                         ))}
 
