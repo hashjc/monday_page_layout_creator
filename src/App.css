@@ -18,7 +18,7 @@ body {
   gap: 0;
   align-items: flex-start;
   flex: 1;
-  min-height: 0; /* Important: allows flex children to shrink */
+  min-height: 0;
 }
 
 .sidebar {
@@ -30,7 +30,7 @@ body {
   flex-direction: column;
   gap: 8px;
   background-color: var(--primary-background-color);
-  flex-shrink: 0; /* Prevent sidebar from shrinking */
+  flex-shrink: 0;
 }
 
 .nav-item {
@@ -61,8 +61,8 @@ body {
   padding: 16px 24px;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* Important: allows content to scroll */
-  overflow-y: auto; /* Allow vertical scrolling */
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .metadata-section {
@@ -71,7 +71,7 @@ body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  min-height: 0; /* Important for nested flex */
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -79,12 +79,11 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
-  overflow-y: auto; /* Enable vertical scrolling */
-  padding-right: 8px; /* Space for scrollbar */
-  max-height: 150px; /* Adjust based on your header height */
+  overflow-y: auto;
+  padding-right: 8px;
+  max-height: 150px;
 }
 
-/* Scrollbar styling (optional) */
 .columns-container::-webkit-scrollbar {
   width: 8px;
 }
@@ -106,7 +105,6 @@ body {
 .column-card {
   cursor: pointer;
   transition: all 0.2s ease;
-  /* Removed margin-bottom since gap handles spacing */
 }
 
 .column-card:hover {
@@ -121,14 +119,6 @@ body {
 
 .column-card.disabled:hover {
   box-shadow: none !important;
-}
-
-.layout-drop-zone {
-  min-height: 200px;
-  padding: 16px;
-  border: 2px dashed transparent;
-  border-radius: 8px;
-  transition: all 0.2s ease;
 }
 
 .layout-field {
@@ -173,15 +163,15 @@ body {
 }
 
 /* ============================================
-   LAYOUT SECTION - Full width drag-and-drop area
+   LAYOUT SECTION
    ============================================ */
 .layout-section {
   width: 100%;
   background-color: var(--primary-background-color);
   border-top: 1px solid var(--ui-border-color);
-  flex-shrink: 0; /* Prevent from shrinking */
-  overflow-y: auto; /* Allow scrolling if needed */
-  max-height: 600px; /* Cap height, rest is scrollable */
+  flex-shrink: 0;
+  overflow-y: auto;
+  max-height: 600px;
 }
 
 /* ============================================
@@ -192,7 +182,7 @@ body {
   flex-direction: column;
   gap: 24px;
   width: 100%;
-  max-width: none; /* Take available width */
+  max-width: none;
 }
 
 .form-fields {
@@ -207,10 +197,33 @@ body {
   flex-direction: column;
 }
 
-/* Make full-width fields span both columns */
 .form-field-wrapper textarea,
 .form-field-wrapper .long-text {
   grid-column: 1 / -1;
+}
+
+/* ============================================
+   SECTION DROP ZONES
+   ============================================ */
+.section-drop-zone {
+  min-height: 150px;
+  padding: 16px;
+  border: 2px dashed transparent;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.section-drop-zone.drag-over {
+  border-color: var(--primary-color, #0073ea);
+  background-color: rgba(0, 115, 234, 0.08);
+}
+
+.layout-section-container {
+  background-color: var(--secondary-background-color);
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--ui-border-color);
 }
 
 /* Responsive form layout */
