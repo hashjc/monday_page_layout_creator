@@ -35,6 +35,16 @@ const App = () => {
     const [newSectionName, setNewSectionName] = useState(""); // Input for new section name
     const [newSectionNameError, setNewSectionNameError] = useState(""); // Error message for section name validation
 
+    // Save the configuration whenever sections are added or changed
+    const persistFormConfig = async (configToSave) => {
+        try {
+            // Use 'instance' scope so settings are unique to this specific app widget
+            await monday.storage.instance.setItem("formConfig", JSON.stringify(configToSave));
+            console.log("Configuration persisted to Monday storage");
+        } catch (error) {
+            console.error("Error saving to storage:", error);
+        }
+    };
     // Handle creating a new section
     const handleCreateNewSection = () => {
         // Validate section name
@@ -58,7 +68,8 @@ const App = () => {
 
         // Update state
         setFormConfig(updatedFormConfig);
-
+        // 2. Persist to Monday Database
+        persistFormConfig(updatedFormConfig);
         // Reset dialog
         setShowNewSectionDialog(false);
         setNewSectionName("");
@@ -363,6 +374,19 @@ const App = () => {
                 } finally {
                     setLoading(false);
                 }
+                // NEW: Check for saved configuration
+                try {
+                    const savedData = await monday.storage.instance.getItem("formConfig");
+                    if (savedData && savedData.data && savedData.data.value) {
+                        setFormConfig(JSON.parse(savedData.data.value));
+                    } else {
+                        // Fallback to default if no saved config exists
+                        const defaultConfig = generateDefaultFormConfig(sortedColumns, boardName);
+                        setFormConfig(defaultConfig);
+                    }
+                } catch (err) {
+                    console.warn("Storage fetch failed, using defaults", err);
+                }
             }
         });
     }, [generateDefaultFormConfig]);
@@ -633,7 +657,7 @@ const App = () => {
                     {/* SECTIONS VIEW */}
                     {selectedSection === "sections" && (
                         <Box>
-                            {/*}
+                            {/*
                             <Heading type="h2" weight="bold" marginBottom="medium">
                                 Sections
                             </Heading>
@@ -774,23 +798,29 @@ const App = () => {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        backgroundColor: "rgba(0, 0, 0, 0.4)", // Darken the background slightly
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        zIndex: 1000,
+                        zIndex: 10000, // Very high z-index to stay above everything
+                        backdropFilter: "blur(4px)", // Optional: blurs the background for focus
                     }}
                     onClick={handleCloseNewSectionDialog}
                 >
                     <Box
                         padding="large"
-                        backgroundColor="var(--primary-background-color)"
                         borderRadius="12px"
                         style={{
-                            minWidth: "400px",
-                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                            minWidth: "450px",
+                            // EXPLICIT SOLID COLORS to prevent transparency
+                            backgroundColor: "#FFFFFF",
+                            background: "white !important",
+                            boxShadow: "0px 15px 50px rgba(0, 0, 0, 0.3)",
                             position: "relative",
-                            zIndex: 1001,
+                            zIndex: 10001,
+                            border: "1px solid #e1e3eb",
+                            display: "block", // Ensure it's not inheriting flex-transparency
+                            opacity: 1, // Force full opacity
                         }}
                         onClick={(e) => e.stopPropagation()}
                     >
@@ -825,6 +855,6 @@ const App = () => {
             )}
         </Box>
     );
-};
+};;
 
 export default App;
